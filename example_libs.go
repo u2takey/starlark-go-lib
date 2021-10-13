@@ -3,6 +3,7 @@ package thirdlib
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -67,6 +68,29 @@ type E = []M
 
 var exampleModules = []*starlarkstruct.Module{
 	GreetModule,
+	{
+		Name: "modules",
+		Members: starlark.StringDict{
+			"all": ToValue(func() (ret []string) {
+				for _, v := range starlark.Universe {
+					if m, ok := v.(*starlarkstruct.Module); ok {
+						ret = append(ret, m.Name)
+					}
+				}
+				return
+			}),
+			"inspect": ToValue(func(a string) (ret []string) {
+				if v, ok := starlark.Universe[a]; ok {
+					if m, ok := v.(*starlarkstruct.Module); ok {
+						for x, y := range m.Members {
+							ret = append(ret, fmt.Sprintf("%s: [%s, %s]", x, y.Type(), y.String()))
+						}
+					}
+				}
+				return
+			}),
+		},
+	},
 	{
 		Name: "go",
 		Members: starlark.StringDict{
