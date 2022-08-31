@@ -219,7 +219,7 @@ func sValueToReflectInner(thread *starlark.Thread, v starlark.Value, hint reflec
 			return reflect.Value{}, conversionError{Value: v, Hint: hint}
 		}
 		elmType := hint.Elem()
-		val := reflect.MakeSlice(elmType, converted.Len(), converted.Len())
+		val := reflect.MakeSlice(hint, converted.Len(), converted.Len())
 		for i := 0; i < converted.Len(); i++ {
 			vi, err := sValueToReflect(thread, converted.Index(i), elmType)
 			if err != nil {
@@ -236,7 +236,7 @@ func sValueToReflectInner(thread *starlark.Thread, v starlark.Value, hint reflec
 			}
 		}
 		elmType := hint.Elem()
-		val := reflect.MakeSlice(elmType, converted.Len(), converted.Len())
+		val := reflect.MakeSlice(hint, converted.Len(), converted.Len())
 		for i := 0; i < converted.Len(); i++ {
 			vi, err := sValueToReflect(thread, converted.Index(i), elmType)
 			if err != nil {
@@ -250,7 +250,7 @@ func sValueToReflectInner(thread *starlark.Thread, v starlark.Value, hint reflec
 			return reflect.Value{}, conversionError{Value: v, Hint: hint}
 		}
 		elmType := hint.Elem()
-		val := reflect.MakeSlice(elmType, converted.Len(), converted.Len())
+		val := reflect.MakeSlice(hint, converted.Len(), converted.Len())
 		iter := converted.Iterate()
 		var elem starlark.Value
 		for i := 0; iter.Next(&elem); i++ {
