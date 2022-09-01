@@ -24,6 +24,10 @@ func NewUserValue(value interface{}, thread *starlark.Thread) *UserValue {
 	}
 }
 
+func (u *UserValue) Interface() interface{} {
+	return u.value
+}
+
 func (u *UserValue) String() string {
 	return fmt.Sprintf("%v", u.value)
 }
@@ -61,11 +65,23 @@ func (u *UserValue) CallInternal(thread *starlark.Thread, args starlark.Tuple, k
 		var argValues []reflect.Value
 		for i := 0; i < u.rtype.NumIn(); i++ {
 			inType := u.rtype.In(i)
-			v, err := sValueToReflect(thread, args[i], inType)
-			if err != nil {
-				return starlark.None, err
+			if i == u.rtype.NumIn()-1 && u.rtype.IsVariadic() {
+				variadicArgs := args[i:]
+				for _, variadicArg := range variadicArgs {
+					v, err := sValueToReflect(thread, variadicArg, inType.Elem())
+					if err != nil {
+						return starlark.None, err
+					}
+					argValues = append(argValues, v)
+				}
+
+			} else {
+				v, err := sValueToReflect(thread, args[i], inType)
+				if err != nil {
+					return starlark.None, err
+				}
+				argValues = append(argValues, v)
 			}
-			argValues = append(argValues, v)
 		}
 		retValues := u.rvalue.Call(argValues)
 		var ret []starlark.Value
