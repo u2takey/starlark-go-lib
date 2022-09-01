@@ -97,10 +97,12 @@ func ToValue(value interface{}) starlark.Value {
 			return starlark.Bytes(val.Bytes())
 		}
 		fallthrough
-	case reflect.Chan, reflect.Map, reflect.Ptr, reflect.Func, reflect.Struct, reflect.Interface:
+	case reflect.Chan, reflect.Map, reflect.Ptr, reflect.Func, reflect.Interface:
 		if val.IsNil() {
 			return starlark.None
 		}
+		return NewUserValue(val.Interface(), gThread)
+	case reflect.Struct:
 		return NewUserValue(val.Interface(), gThread)
 	default:
 		return NewUserValue(val.Interface(), gThread)
